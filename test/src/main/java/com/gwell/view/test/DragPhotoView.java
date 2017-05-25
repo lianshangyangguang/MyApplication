@@ -29,7 +29,7 @@ public class DragPhotoView extends PhotoView {
     private float mScale = 1;
     private int mWidth;
     private int mHeight;
-    private float mMinScale = 0.5f;
+    private float mMinScale = 0f;
     private int mAlpha = 255;
     private final static int MAX_TRANSLATE_Y = 500;
 
@@ -81,14 +81,26 @@ public class DragPhotoView extends PhotoView {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     Log.d("zxy", "ACTION_DOWN: ");
-                    onActionDown(event);
+                    if (event.getPointerCount() == 2){
+                        beforeLenght = getDistance(event);// 获取两点的距离
+                    }else{
 
-                    //change the canFinish flag
-                    canFinish = !canFinish;
+                        onActionDown(event);
+
+                        //change the canFinish flag
+                        canFinish = !canFinish;
+                    }
+
+
 
                     break;
+
                 case MotionEvent.ACTION_MOVE:
                     Log.d("zxy", "ACTION_MOVE: ");
+                     if (event.getPointerCount() == 2){
+                         Log.d("zxy", "双击 ");
+                         onPointerDown(event);
+                     }
                     //in viewpager
                     if (mTranslateY == 0 && mTranslateX != 0) {
 
@@ -100,6 +112,7 @@ public class DragPhotoView extends PhotoView {
                     }
 
                     //single finger drag  down
+
                     if (mTranslateY >= 0 && event.getPointerCount() == 1) {
                         onActionMove(event);
 
@@ -117,27 +130,88 @@ public class DragPhotoView extends PhotoView {
 
                 case MotionEvent.ACTION_UP:
                     //防止下拉的时候双手缩放
-                    if (event.getPointerCount() == 1) {
-                        onActionUp(event);
-                        isTouchEvent = false;
-                        //judge finish or not
-                        postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (mTranslateX == 0 && mTranslateY == 0 && canFinish) {
-
-                                    if (mTapListener != null) {
-                                        mTapListener.onTap(DragPhotoView.this);
-                                    }
+                    if (event.getPointerCount() == 1 ) {
+                        Log.d("zxy", "up1: ");
+                        if (zoomStatus  == 1){
+                            zoomStatus  =0 ;
+                            getScaleAnimation().start();
+                            final ValueAnimator animator = ValueAnimator.ofFloat(getX(), 0);
+                            animator.setDuration(DURATION);
+                            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                                @Override
+                                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                                    mTranslateX = (float) valueAnimator.getAnimatedValue();
                                 }
-                                canFinish = false;
-                            }
-                        }, 300);
+                            });
+                            animator.start();
+//                            getTranslateXAnimation().setDuration(2000).start();
+                            getTranslateYAnimation().start();
+                            getAlphaAnimation().start();
+                            break;
+                        }else{
+                            onActionUp(event);
+                            isTouchEvent = false;
+                            //judge finish or not
+                            postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (mTranslateX == 0 && mTranslateY == 0 && canFinish) {
+
+                                        if (mTapListener != null) {
+                                            mTapListener.onTap(DragPhotoView.this);
+                                        }
+                                    }
+                                    canFinish = false;
+                                }
+                            }, 300);
+                        }
+
                     }
             }
         }
 
         return super.dispatchTouchEvent(event);
+    }
+
+    private float beforeLenght, afterLenght;// 两触点距离
+    private int zoomStatus = 0;
+
+    /**
+     * 两个手指 只能放大缩小
+     **/
+    void onPointerDown(MotionEvent event) {
+        if (event.getPointerCount() == 2) {
+//            mode = MODE.ZOOM;
+            zoomStatus = 1;
+            afterLenght = getDistance(event);// 获取两点的距离
+            float gapLenght = afterLenght - beforeLenght;// 变化的长度
+
+            if (Math.abs(gapLenght) > 50f) {
+                mScale = afterLenght / beforeLenght ;// 求的缩放的比例
+                if (mScale <1){
+                    mScale -=0.2f;
+                }
+                Log.d("zxy", "mScale: "+mScale);
+                beforeLenght = afterLenght;
+                if (mScale < mMinScale) {
+                    mScale = mMinScale;
+                } else if (mScale > 1f) {
+                    mScale = 1;
+                }
+
+                invalidate();
+            }
+        }
+    }
+
+    /**
+     * 获取两点的距离
+     **/
+    float getDistance(MotionEvent event) {
+        float x = event.getX(0) - event.getX(1);
+        float y = event.getY(0) - event.getY(1);
+
+        return (float) Math.sqrt(x * x + y * y);
     }
 
     private void onActionUp(MotionEvent event) {
@@ -154,11 +228,12 @@ public class DragPhotoView extends PhotoView {
     }
 
     private void onActionMove(MotionEvent event) {
-        Log.d("zxy", "onActionMove: ");
+        Log.d("zxy", "onActionMove1: mTranslateY"+mTranslateY);
         float moveY = event.getY();
         float moveX = event.getX();
         mTranslateX = moveX - mDownX;
         mTranslateY = moveY - mDownY;
+        Log.d("zxy", "onActionMove2: mTranslateY"+mTranslateY);
 
         //保证上划到到顶还可以继续滑动
         if (mTranslateY < 0) {
@@ -299,8 +374,10 @@ public class DragPhotoView extends PhotoView {
     }
 
     public void finishAnimationCallBack() {
+        Log.d("zxy", "finishAnimationCallBack1: mTranslateY"+mTranslateY);
         mTranslateX = -mWidth / 2 + mWidth * mScale / 2;
         mTranslateY = -mHeight / 2 + mHeight * mScale / 2;
+        Log.d("zxy", "finishAnimationCallBack2: mTranslateY"+mTranslateY);
         invalidate();
     }
 
