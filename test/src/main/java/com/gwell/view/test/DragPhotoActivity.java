@@ -45,16 +45,17 @@ public class DragPhotoActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
 
         mList = new ArrayList<>();
-
         mList.add("path");
-        mList.add("path");
-        mList.add("path");
-
         mPhotoViews = new DragPhotoView[mList.size()];
 
         for (int i = 0; i < mPhotoViews.length; i++) {
             mPhotoViews[i] = (DragPhotoView) View.inflate(this, R.layout.item_viewpager, null);
-            mPhotoViews[i].setImageResource(R.drawable.wugeng);
+            int src = getIntent().getIntExtra("src",-1);
+            if (src == -1){
+                mPhotoViews[i].setImageResource(R.mipmap.ic_launcher);  //占位图
+            }else {
+                mPhotoViews[i].setImageResource(src);
+            }
             mPhotoViews[i].setOnTapListener(new DragPhotoView.OnTapListener() {
                 @Override
                 public void onTap(DragPhotoView view) {
