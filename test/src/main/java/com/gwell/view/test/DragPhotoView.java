@@ -374,10 +374,8 @@ public class DragPhotoView extends PhotoView {
     }
 
     public void finishAnimationCallBack() {
-        Log.d("zxy", "finishAnimationCallBack1: mTranslateY"+mTranslateY);
         mTranslateX = -mWidth / 2 + mWidth * mScale / 2;
         mTranslateY = -mHeight / 2 + mHeight * mScale / 2;
-        Log.d("zxy", "finishAnimationCallBack2: mTranslateY"+mTranslateY);
         invalidate();
     }
 

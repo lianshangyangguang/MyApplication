@@ -1,5 +1,8 @@
 package com.gwell.view.myapplication;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -81,6 +84,7 @@ public class Main2Activity extends Activity {
                     });
 
 
+
 //            performEnterAnimation();
 //            mPhotoViews[0].setMinScale(mScaleX);
 
@@ -120,6 +124,80 @@ public class Main2Activity extends Activity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(0,R.animator.close_up);
+    }
+
+    private void out(){
+        ObjectAnimator translationX = ObjectAnimator.ofFloat(dragImageView, "translationX", 0, 290);
+        ObjectAnimator translationY = ObjectAnimator.ofFloat(dragImageView, "translationY", 0, 500);
+
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(dragImageView, "scaleX", 1, 9);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(dragImageView, "scaleY", 1, 9);
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(dragImageView, "alpha", 0, 1);
+        scaleY.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                View v = (View) dragImageView.getParent();
+                v.setBackgroundColor(Color.BLACK);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(translationX, translationY, scaleX, scaleY);
+        animatorSet.setDuration(300);
+        animatorSet.start();
+    }
+
+    private void comein(){
+        ObjectAnimator translationX = ObjectAnimator.ofFloat(dragImageView, "translationX", 0, 290);
+        ObjectAnimator translationY = ObjectAnimator.ofFloat(dragImageView, "translationY", 0, 500);
+
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(dragImageView, "scaleX", 1, 10);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(dragImageView, "scaleY", 1, 12);
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(dragImageView, "alpha", 0, 1);
+        scaleY.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+//                View v = (View) dragImageView.getParent();
+//                v.setBackgroundColor(Color.BLACK);
+//                dragImageView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+//                        ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(translationX, translationY, scaleX, scaleY);
+        animatorSet.setDuration(300);
+        animatorSet.start();
     }
 }
 

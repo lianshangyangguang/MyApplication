@@ -54,7 +54,7 @@ public class DragPhotoActivity extends AppCompatActivity {
             if (src == -1){
                 mPhotoViews[i].setImageResource(R.mipmap.ic_launcher);  //占位图
             }else {
-                mPhotoViews[i].setImageResource(src);
+                mPhotoViews[i].setImageResource(R.mipmap.ic_launcher);
             }
             mPhotoViews[i].setOnTapListener(new DragPhotoView.OnTapListener() {
                 @Override
