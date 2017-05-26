@@ -39,5 +39,61 @@ public class MainActivity extends AppCompatActivity {
         overridePendingTransition(0, 0);
     }
 
-
+//    private void performExitAnimation(final DragPhotoView view, float x, float y, float w, float h) {
+//        Log.d("zxy", "performExitAnimation: ");
+//        view.finishAnimationCallBack();
+//        float viewX = mTargetWidth / 2 + x - mTargetWidth * mScaleX / 2;
+//        float viewY = mTargetHeight / 2 + y - mTargetHeight * mScaleY / 2;
+//        view.setX(viewX);
+//        view.setY(viewY);
+//
+//        float centerX = view.getX() + mOriginWidth / 2;
+//        float centerY = view.getY() + mOriginHeight / 2;
+//
+//        float translateX = mOriginCenterX - centerX;
+//        float translateY = mOriginCenterY - centerY;
+//
+//
+//        ValueAnimator translateXAnimator = ValueAnimator.ofFloat(view.getX(), view.getX() + translateX);
+//        translateXAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//            @Override
+//            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+//                view.setX((Float) valueAnimator.getAnimatedValue());
+//            }
+//        });
+//        translateXAnimator.setDuration(300);
+//        translateXAnimator.start();
+//        ValueAnimator translateYAnimator = ValueAnimator.ofFloat(view.getY(), view.getY() + translateY);
+//        translateYAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//            @Override
+//            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+//                view.setY((Float) valueAnimator.getAnimatedValue());
+//            }
+//        });
+//        translateYAnimator.addListener(new Animator.AnimatorListener() {
+//            @Override
+//            public void onAnimationStart(Animator animator) {
+//
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animator animator) {
+//                animator.removeAllListeners();
+//                finish();
+//                overridePendingTransition(0, 0);
+//            }
+//
+//            @Override
+//            public void onAnimationCancel(Animator animator) {
+//
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animator animator) {
+//
+//            }
+//        });
+//        translateYAnimator.setDuration(300);
+//        translateYAnimator.start();
+//    }
 }

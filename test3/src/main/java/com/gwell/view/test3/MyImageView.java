@@ -28,14 +28,12 @@ public class MyImageView extends ImageView {
     private int mHeight;
     private float mMinScale = 0f;
     private int mAlpha = 255;
-    private final static int MAX_TRANSLATE_Y = 400;
+    private final static int MAX_TRANSLATE_Y = 90;  //缩放时，两手指距离与此值相除，为scale
 
     private final static long DURATION = 300;
-    private boolean canFinish = false;
-    private boolean isAnimate = false;
-
     //is event on PhotoView
     private boolean isTouchEvent = false;
+    private String TAG = "zxy";
     private Context context;
 
     public MyImageView(Context context) {
@@ -53,13 +51,6 @@ public class MyImageView extends ImageView {
         mPaint = new Paint();
     }
 
-    public MyImageView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        mPaint = new Paint();
-    }
-
-    String TAG = "zxy";
-
     @Override
     protected void onDraw(Canvas canvas) {
         mPaint.setAlpha(mAlpha);
@@ -67,16 +58,6 @@ public class MyImageView extends ImageView {
         canvas.translate(mTranslateX, mTranslateY);
         canvas.scale(mScale, mScale, mWidth / 2, mHeight / 2);
         super.onDraw(canvas);
-    }
-
-    public void setPaintAlpha(int alpha) {
-        mAlpha = alpha;
-        invalidate();
-    }
-
-    public void setSceen(int mWidth, int mHeight) {
-        this.mWidth = mWidth;
-        this.mHeight = mHeight;
     }
 
     @Override
@@ -95,8 +76,6 @@ public class MyImageView extends ImageView {
         /** 处理单点、多点触摸 **/
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
-//                count++;
-//                onTouchDown(event);
                 long currentTime = System.currentTimeMillis();
                 if (currentTime - startTime <= 1000) {
                     //双击事件
@@ -115,7 +94,6 @@ public class MyImageView extends ImageView {
                 break;
             // 多点触摸
             case MotionEvent.ACTION_POINTER_DOWN:
-//                onPointerDown(event);
                 if (event.getPointerCount() == 2) {
                     Log.d(TAG, "多点触摸: ");
                     beforeLenght = getDistance(event);// 获取两点的距离
@@ -123,7 +101,6 @@ public class MyImageView extends ImageView {
                 break;
 
             case MotionEvent.ACTION_MOVE:
-//                onTouchMove(event);
                 if (mTranslateY >= 0 && event.getPointerCount() == 1) {
                     onActionMove(event);
                     if (drag == 0 && zoomStatus == 0) {
@@ -140,12 +117,10 @@ public class MyImageView extends ImageView {
                     if (drag == 0 && zoomStatus == 0) {
                         zoomStatus = 1;
                     }
-
                     onPointerDown(event);
                 }
                 //in viewpager
                 if (mTranslateY == 0 && mTranslateX != 0) {
-
                     //如果不消费事件，则不作操作
                     if (!isTouchEvent) {
                         mScale = 1;
@@ -159,23 +134,19 @@ public class MyImageView extends ImageView {
                 break;
             case MotionEvent.ACTION_UP:
                 Log.d("zxy", "ACTION_UP:zoomStatus :" + zoomStatus + "event.getPointerCount()" + event.getPointerCount() + "drag:" + drag);
-
                 endTime = System.currentTimeMillis();
                 if (endTime - startTime < 100 && event.getPointerCount() == 1) {
                     Log.d(TAG, "UP1: ");
                     if (onClickListener != null) {
                         if (mScale == 1) {
-
                             onClickListener.onClick();
                         } else {
-
-                            onClickListener.onChangeBackground();
+                            goBack();
                         }
                     }
                 }
                 if (zoomStatus == 1 && event.getPointerCount() == 2) {
                     zoomStatus = 0;
-//                    if (mScale<1){
                     final ValueAnimator animator = ValueAnimator.ofFloat(mScale, 1);
                     animator.setDuration(300);
                     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -188,7 +159,6 @@ public class MyImageView extends ImageView {
                     animator.start();
                     mScale = 1;
                     drag = 0;
-//                    }
                 }
                 if (drag == 1 && event.getPointerCount() == 1 && mScale <= 1 && zoomStatus == 0) {
                     if (mTranslateY > 30 || mTranslateX > 30) {
@@ -199,7 +169,7 @@ public class MyImageView extends ImageView {
                             if (mScale == 1) {
                                 onClickListener.onClick();
                             } else {
-                                onClickListener.onChangeBackground();
+                                goBack();
                             }
                         }
                     } else {
@@ -219,7 +189,6 @@ public class MyImageView extends ImageView {
 
             // 多点松开
             case MotionEvent.ACTION_POINTER_UP:
-//                Log.d(TAG, "多点松开:zoomStatus "+zoomStatus);
                 if (zoomStatus == 1 && event.getPointerCount() == 2) {
                     zoomStatus = 0;
                     final ValueAnimator animator = ValueAnimator.ofFloat(mScale, 1);
@@ -234,12 +203,69 @@ public class MyImageView extends ImageView {
                     animator.start();
                     mScale = 1;
                     invalidate();
-//                    }
                 }
                 break;
 
         }
         return true;
+
+    }
+
+    private void goBack() {
+        final ValueAnimator animator = ValueAnimator.ofFloat(mTranslateY, -34);
+        animator.setDuration(DURATION);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                mTranslateY = (float) valueAnimator.getAnimatedValue();
+                invalidate();
+            }
+        });
+        animator.start();
+
+        final ValueAnimator animatorX = ValueAnimator.ofFloat(mTranslateX, -25);
+        animatorX.setDuration(DURATION);
+        animatorX.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                mTranslateX = (float) valueAnimator.getAnimatedValue();
+                invalidate();
+            }
+        });
+        animatorX.start();
+
+        final ValueAnimator animatorScale = ValueAnimator.ofFloat(mScale, 0.09f);
+        animatorScale.setDuration(DURATION);
+        animatorScale.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                mScale = (float) valueAnimator.getAnimatedValue();
+                invalidate();
+            }
+        });
+        animatorScale.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                onClickListener.onChangeBackground();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        animatorScale.start();
+
 
     }
 
@@ -275,7 +301,7 @@ public class MyImageView extends ImageView {
             mTranslateY = 0;
         }
 
-        float percent = mTranslateY / 90;
+        float percent = mTranslateY / MAX_TRANSLATE_Y;
         if (mScale >= mMinScale && mScale <= 1f) {
             mScale = 1 - percent;
             mAlpha = (int) (255 * (1 - percent));
@@ -293,6 +319,7 @@ public class MyImageView extends ImageView {
         invalidate();
     }
 
+    //测试   拖到上方的效果
     private void drag(MotionEvent event) {
         Log.d(TAG, " 单个:zoomStatus" + zoomStatus);
         Log.d("zxy", "onActionMove1: mTranslateY" + mTranslateY);
@@ -351,11 +378,8 @@ public class MyImageView extends ImageView {
             afterLenght = getDistance(event);// 获取两点的距离
             float gapLenght = afterLenght - beforeLenght;// 变化的长度
             Log.d(TAG, "gapLenght: " + gapLenght);
-            if (Math.abs(gapLenght) > 20f) {
+            if (Math.abs(gapLenght) > 10f) {
                 mScale = afterLenght / beforeLenght;// 求的缩放的比例
-//                if (mScale < 1) {
-//                    mScale -= 0.2f;
-//                }
                 Log.d("zxy", "mScale: " + mScale);
                 beforeLenght = afterLenght;
                 if (mScale < mMinScale) {
@@ -367,42 +391,6 @@ public class MyImageView extends ImageView {
                 invalidate();
             }
         }
-    }
-
-    private ValueAnimator getScaleAnimation() {
-        final ValueAnimator animator = ValueAnimator.ofFloat(mScale, 1);
-        animator.setDuration(DURATION);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                mScale = (float) valueAnimator.getAnimatedValue();
-                invalidate();
-            }
-        });
-
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animator) {
-                isAnimate = true;
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                isAnimate = false;
-                animator.removeAllListeners();
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animator) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animator) {
-
-            }
-        });
-        return animator;
     }
 
     private ValueAnimator getTranslateYAnimation() {
@@ -429,11 +417,5 @@ public class MyImageView extends ImageView {
         });
 
         return animator;
-    }
-
-    public void finishAnimationCallBack() {
-        mTranslateX = -mWidth / 2 + mWidth * mScale / 2;
-        mTranslateY = -mHeight / 2 + mHeight * mScale / 2;
-        invalidate();
     }
 }

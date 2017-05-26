@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -145,6 +146,7 @@ public class DragPhotoActivity extends AppCompatActivity {
      * Code  under is shared transitions in all android versions implementation
      */
     private void performExitAnimation(final DragPhotoView view, float x, float y, float w, float h) {
+        Log.d("zxy", "performExitAnimation: ");
         view.finishAnimationCallBack();
         float viewX = mTargetWidth / 2 + x - mTargetWidth * mScaleX / 2;
         float viewY = mTargetHeight / 2 + y - mTargetHeight * mScaleY / 2;
@@ -202,7 +204,7 @@ public class DragPhotoActivity extends AppCompatActivity {
     }
 
     private void finishWithAnimation() {
-
+        Log.d("zxy", "finishWithAnimation: ");
         final DragPhotoView photoView = mPhotoViews[0];
         ValueAnimator translateXAnimator = ValueAnimator.ofFloat(0, mTranslationX);
         translateXAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
