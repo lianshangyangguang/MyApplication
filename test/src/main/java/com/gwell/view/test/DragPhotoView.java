@@ -243,7 +243,6 @@ public class DragPhotoView extends PhotoView {
         float percent = mTranslateY / MAX_TRANSLATE_Y;
         if (mScale >= mMinScale && mScale <= 1f) {
             mScale = 1 - percent;
-
             mAlpha = (int)(255 * (1 - percent));
             if (mAlpha > 255) {
                 mAlpha = 255;

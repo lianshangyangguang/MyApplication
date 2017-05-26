@@ -4,7 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -74,7 +78,29 @@ public class Main2Activity extends AppCompatActivity {
 
             @Override
             public void onChangeBackground() {
-                out2();
+//                out2();
+                int location[] = new int[2];
+
+//                img2.getLocationOnScreen(location);
+//                img2.setX(location[0]);
+//                img2.setY(location[1]);
+//                img2.layout(location[0],location[1],(int)(location[0]+img2.getWidth()),(int)(location[1]+img2.getHeight()));
+                Intent intent = new Intent(Main2Activity.this, MainActivity.class);
+                //传入选中的Item对应的ID
+                intent.putExtra("id", 1);
+
+                //主要的语句
+                //通过makeSceneTransitionAnimation传入多个Pair
+                //每个Pair将一个当前Activity的View和目标Activity中的一个Key绑定起来
+                //在目标Activity中会调用这个Key
+                ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        Main2Activity.this,
+                        new Pair<View, String>(img2,
+                                "key")
+                );
+                // ActivityCompat是android支持库中用来适应不同android版本的
+                ActivityCompat.startActivity(Main2Activity.this, intent, activityOptions.toBundle());
+//                overridePendingTransition(R.animator.start_down,0);
             }
         });
     }
@@ -90,6 +116,7 @@ public class Main2Activity extends AppCompatActivity {
 
         ObjectAnimator scaleX = ObjectAnimator.ofFloat(img2, "scaleX", img2.getScaleX(), 1);
         ObjectAnimator scaleY = ObjectAnimator.ofFloat(img2, "scaleY", img2.getScaleY(), 1);
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(img2, "alpha", 255,0);
         scaleY.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -98,10 +125,8 @@ public class Main2Activity extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                img2.setAlpha(255);
                 finish();
             }
-
             @Override
             public void onAnimationCancel(Animator animation) {
 
@@ -114,18 +139,38 @@ public class Main2Activity extends AppCompatActivity {
         });
 
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(translationX, translationY, scaleX, scaleY);
-        animatorSet.setDuration(300);
+        animatorSet.playTogether(translationX, translationY, scaleX, scaleY,alpha);
+        animatorSet.setDuration(500);
         animatorSet.start();
     }
 
     private void out2() {
-        ObjectAnimator translationX = ObjectAnimator.ofFloat(img2, "translationX", img2.getTranslationX(), 0);
-        ObjectAnimator translationY = ObjectAnimator.ofFloat(img2, "translationY", img2.getTranslationY(), 70);
+        final ValueAnimator animator = ValueAnimator.ofFloat(img2.getX(), mOriginLeft);
+        animator.setDuration(1000);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float  x = (float) valueAnimator.getAnimatedValue();
+                img2.setTranslationX(x);
+            }
+        });
+        animator.start();
+        final ValueAnimator animatorY = ValueAnimator.ofFloat(img2.getY(), mOriginTop-100);
+        animatorY.setDuration(1000);
+        animatorY.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float  y = (float) valueAnimator.getAnimatedValue();
+                img2.setTranslationY( y);
+            }
+        });
+        animatorY.start();
 
-        ObjectAnimator scaleX = ObjectAnimator.ofFloat(img2, "scaleX", img2.getScaleX(), 0.5f);
-        ObjectAnimator scaleY = ObjectAnimator.ofFloat(img2, "scaleY", img2.getScaleY(), 0.5f);
-        ObjectAnimator alpha = ObjectAnimator.ofFloat(img2, "alpha", 1, 0);
+        ObjectAnimator translationX = ObjectAnimator.ofFloat(img2, "translationX", img2.getX(),30);
+        ObjectAnimator translationY = ObjectAnimator.ofFloat(img2, "translationY", img2.getY(),130);
+
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(img2, "scaleX", img2.getScaleX(), 2f);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(img2, "scaleY", img2.getScaleY(), 2f);
         scaleY.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -149,8 +194,8 @@ public class Main2Activity extends AppCompatActivity {
         });
 
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(translationX, translationY, scaleX, scaleY);
-        animatorSet.setDuration(300);
+        animatorSet.playTogether(scaleX, scaleY);
+        animatorSet.setDuration(1000);
         animatorSet.start();
     }
 
@@ -188,7 +233,7 @@ public class Main2Activity extends AppCompatActivity {
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether( scaleX, scaleY,translationX,translationY);
-        animatorSet.setDuration(300);
+        animatorSet.setDuration(500);
         animatorSet.start();
     }
 

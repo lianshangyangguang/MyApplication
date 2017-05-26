@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -29,7 +28,7 @@ public class MyImageView extends ImageView {
     private int mHeight;
     private float mMinScale = 0f;
     private int mAlpha = 255;
-    private final static int MAX_TRANSLATE_Y = 500;
+    private final static int MAX_TRANSLATE_Y = 400;
 
     private final static long DURATION = 300;
     private boolean canFinish = false;
@@ -37,7 +36,7 @@ public class MyImageView extends ImageView {
 
     //is event on PhotoView
     private boolean isTouchEvent = false;
-  private Context context;
+    private Context context;
 
     public MyImageView(Context context) {
         super(context, null, 0);
@@ -57,14 +56,12 @@ public class MyImageView extends ImageView {
     public MyImageView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         mPaint = new Paint();
-        mPaint.setColor(Color.BLACK);
     }
 
     String TAG = "zxy";
 
     @Override
     protected void onDraw(Canvas canvas) {
-
         mPaint.setAlpha(mAlpha);
         canvas.drawRect(0, 0, mWidth, mHeight, mPaint);
         canvas.translate(mTranslateX, mTranslateY);
@@ -72,9 +69,14 @@ public class MyImageView extends ImageView {
         super.onDraw(canvas);
     }
 
-    public void setSceen(int mWidth,int mHeight){
+    public void setPaintAlpha(int alpha) {
+        mAlpha = alpha;
+        invalidate();
+    }
+
+    public void setSceen(int mWidth, int mHeight) {
         this.mWidth = mWidth;
-        this.mHeight= mHeight;
+        this.mHeight = mHeight;
     }
 
     @Override
@@ -110,8 +112,6 @@ public class MyImageView extends ImageView {
                 Log.d("zxy", "ACTION_DOWN: ");
                 mDownX = event.getX();
                 mDownY = event.getY();
-
-
                 break;
             // 多点触摸
             case MotionEvent.ACTION_POINTER_DOWN:
@@ -126,8 +126,8 @@ public class MyImageView extends ImageView {
 //                onTouchMove(event);
                 if (mTranslateY >= 0 && event.getPointerCount() == 1) {
                     onActionMove(event);
-                    if ( drag==0 && zoomStatus ==0){
-                            drag=1;
+                    if (drag == 0 && zoomStatus == 0) {
+                        drag = 1;
                     }
                     //如果有上下位移 则不交给viewpager
                     if (mTranslateY != 0) {
@@ -137,8 +137,8 @@ public class MyImageView extends ImageView {
                 }
                 if (event.getPointerCount() == 2) {
                     Log.d("zxy", "双击 ");
-                    if ( drag==0 && zoomStatus ==0){
-                        zoomStatus =1;
+                    if (drag == 0 && zoomStatus == 0) {
+                        zoomStatus = 1;
                     }
 
                     onPointerDown(event);
@@ -158,7 +158,7 @@ public class MyImageView extends ImageView {
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                Log.d("zxy", "ACTION_UP:zoomStatus :"+zoomStatus+"event.getPointerCount()"+event.getPointerCount()+"drag:"+drag);
+                Log.d("zxy", "ACTION_UP:zoomStatus :" + zoomStatus + "event.getPointerCount()" + event.getPointerCount() + "drag:" + drag);
 
                 endTime = System.currentTimeMillis();
                 if (endTime - startTime < 100 && event.getPointerCount() == 1) {
@@ -168,54 +168,72 @@ public class MyImageView extends ImageView {
 
                             onClickListener.onClick();
                         } else {
+
                             onClickListener.onChangeBackground();
                         }
                     }
                 }
-                if (zoomStatus == 1 && event.getPointerCount() ==2) {
+                if (zoomStatus == 1 && event.getPointerCount() == 2) {
                     zoomStatus = 0;
 //                    if (mScale<1){
+                    final ValueAnimator animator = ValueAnimator.ofFloat(mScale, 1);
+                    animator.setDuration(300);
+                    animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                            mScale = (float) valueAnimator.getAnimatedValue();
+                            invalidate();
+                        }
+                    });
+                    animator.start();
                     mScale = 1;
                     drag = 0;
-                    invalidate();
 //                    }
                 }
-                if (drag == 1 && event.getPointerCount() ==1 &&mScale <= 1 && zoomStatus == 0) {
-                    if (mTranslateY>30 ||mTranslateX>30){
+                if (drag == 1 && event.getPointerCount() == 1 && mScale <= 1 && zoomStatus == 0) {
+                    if (mTranslateY > 30 || mTranslateX > 30) {
                         Log.d(TAG, "UP2: ");
                         mAlpha = 0;
                         invalidate();
                         if (onClickListener != null) {
                             if (mScale == 1) {
-
                                 onClickListener.onClick();
                             } else {
                                 onClickListener.onChangeBackground();
                             }
                         }
-                    }else {
+                    } else {
                         mAlpha = 255;
                         mScale = 1;
-                        mTranslateX =0;
-                        mTranslateY =0;
+                        mTranslateX = 0;
+                        mTranslateY = 0;
                         invalidate();
                     }
 
                 }
-                if (drag == 0 || zoomStatus ==0 ){
+                if (drag == 0 || zoomStatus == 0) {
                     drag = 0;
-                    zoomStatus =0;
+                    zoomStatus = 0;
                 }
                 break;
 
             // 多点松开
             case MotionEvent.ACTION_POINTER_UP:
 //                Log.d(TAG, "多点松开:zoomStatus "+zoomStatus);
-                if (zoomStatus == 1 && event.getPointerCount() ==2) {
+                if (zoomStatus == 1 && event.getPointerCount() == 2) {
                     zoomStatus = 0;
-//                    if (mScale<1){
-                        mScale = 1;
-                        invalidate();
+                    final ValueAnimator animator = ValueAnimator.ofFloat(mScale, 1);
+                    animator.setDuration(300);
+                    animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                            mScale = (float) valueAnimator.getAnimatedValue();
+                            invalidate();
+                        }
+                    });
+                    animator.start();
+                    mScale = 1;
+                    invalidate();
 //                    }
                 }
                 break;
@@ -223,6 +241,18 @@ public class MyImageView extends ImageView {
         }
         return true;
 
+    }
+
+    public float getTranslateY() {
+        return mTranslateY;
+    }
+
+    public float getTranslateX() {
+        return mTranslateX;
+    }
+
+    public float getMScale() {
+        return mScale;
     }
 
     private int drag = 0;
@@ -245,31 +275,25 @@ public class MyImageView extends ImageView {
             mTranslateY = 0;
         }
 
-        float percent = mTranslateY / MAX_TRANSLATE_Y;
+        float percent = mTranslateY / 90;
         if (mScale >= mMinScale && mScale <= 1f) {
             mScale = 1 - percent;
-            mScale -= 0.4;
             mAlpha = (int) (255 * (1 - percent));
-            mAlpha -= 70;
             if (mAlpha > 255) {
                 mAlpha = 255;
             } else if (mAlpha < 0) {
                 mAlpha = 0;
             }
-
         }
         if (mScale < mMinScale) {
             mScale = mMinScale;
         } else if (mScale > 1f) {
             mScale = 1;
         }
-
         invalidate();
-
-
     }
 
-    private void drag(MotionEvent event){
+    private void drag(MotionEvent event) {
         Log.d(TAG, " 单个:zoomStatus" + zoomStatus);
         Log.d("zxy", "onActionMove1: mTranslateY" + mTranslateY);
         if (zoomStatus == 1) {
@@ -318,7 +342,7 @@ public class MyImageView extends ImageView {
      **/
     void onPointerDown(MotionEvent event) {
         Log.d(TAG, "两个手指: zoomStatus" + zoomStatus);
-        if (drag == 1){
+        if (drag == 1) {
             return;
         }
         if (event.getPointerCount() == 2) {
@@ -407,4 +431,9 @@ public class MyImageView extends ImageView {
         return animator;
     }
 
+    public void finishAnimationCallBack() {
+        mTranslateX = -mWidth / 2 + mWidth * mScale / 2;
+        mTranslateY = -mHeight / 2 + mHeight * mScale / 2;
+        invalidate();
+    }
 }
