@@ -171,7 +171,7 @@ public class MyImageView extends ImageView {
             return;
         }
         Log.d(TAG, "goBack: toTranslateX"+toTranslateX);
-        final ValueAnimator animator = ValueAnimator.ofFloat(mTranslateY, toTranslateY/(11.5f));
+        final ValueAnimator animator = ValueAnimator.ofFloat(mTranslateY, toTranslateY/(12f));
         animator.setDuration(DURATION);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -204,24 +204,15 @@ public class MyImageView extends ImageView {
         });
         animatorScale.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
+            public void onAnimationStart(Animator animation) {}
             @Override
             public void onAnimationEnd(Animator animation) {
                 onClickListener.onExit();
             }
-
             @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
+            public void onAnimationCancel(Animator animation) {}
             @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
+            public void onAnimationRepeat(Animator animation) {}
         });
         animatorScale.start();
 
