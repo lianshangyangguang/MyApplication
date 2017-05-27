@@ -28,7 +28,6 @@ public class MyImageView extends ImageView {
     private float mMinScale = 0f;
     private int mAlpha = 255;
     private final static int MAX_TRANSLATE_Y = 90;  //缩放时，两手指距离与此值相除，为scale
-
     private final static long DURATION = 300;
     //is event on PhotoView
     private boolean isTouchEvent = false;
@@ -91,9 +90,9 @@ public class MyImageView extends ImageView {
                 break;
 
             case MotionEvent.ACTION_MOVE:
-               if (mTranslateY <= 0 && event.getPointerCount() == 1){
-                   drag(event);
-               }else if (mTranslateY >= 0 && event.getPointerCount() == 1) {
+                if (mTranslateY <= 0 && event.getPointerCount() == 1) {
+                    drag(event);
+                } else if (mTranslateY >= 0 && event.getPointerCount() == 1) {
                     onActionMove(event);
                     //如果有上下位移 则不交给viewpager
                     if (mTranslateY != 0) {
@@ -123,7 +122,7 @@ public class MyImageView extends ImageView {
                 endTime = System.currentTimeMillis();
                 if (endTime - startTime < 100 && event.getPointerCount() == 1) {
                     if (onClickListener != null) {
-                            goBack();
+                        goBack();
                     }
                 }
                 if (state == 1 && event.getPointerCount() == 1 && mScale <= 1) {
@@ -131,7 +130,7 @@ public class MyImageView extends ImageView {
                         mAlpha = 0;
                         invalidate();
                         if (onClickListener != null) {
-                                goBack();
+                            goBack();
                         }
                     } else {
                         mAlpha = 255;
@@ -168,7 +167,11 @@ public class MyImageView extends ImageView {
     }
 
     public void goBack() {
-        final ValueAnimator animator = ValueAnimator.ofFloat(mTranslateY, -34);
+        if (toState == 0){
+            return;
+        }
+        Log.d(TAG, "goBack: toTranslateX"+toTranslateX);
+        final ValueAnimator animator = ValueAnimator.ofFloat(mTranslateY, toTranslateY/(11.5f));
         animator.setDuration(DURATION);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -179,7 +182,7 @@ public class MyImageView extends ImageView {
         });
         animator.start();
 
-        final ValueAnimator animatorX = ValueAnimator.ofFloat(mTranslateX, -25);
+        final ValueAnimator animatorX = ValueAnimator.ofFloat(mTranslateX, toTranslateX/(12f));
         animatorX.setDuration(DURATION);
         animatorX.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -227,7 +230,7 @@ public class MyImageView extends ImageView {
         animatorAlpha.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                mAlpha = (int)valueAnimator.getAnimatedValue();
+                mAlpha = (int) valueAnimator.getAnimatedValue();
                 invalidate();
             }
         });
@@ -235,6 +238,15 @@ public class MyImageView extends ImageView {
 
     }
 
+    float toTranslateX;
+    float toTranslateY;
+    int toState = 0;
+
+    public void setGoBack(float toTranslateX, float toTranslateY) {
+        this.toTranslateX = toTranslateX;
+        this.toTranslateY = toTranslateY;
+         toState = 1;
+    }
 
     public float getTranslateY() {
         return mTranslateY;
@@ -305,7 +317,7 @@ public class MyImageView extends ImageView {
     /**
      * 获取两点的距离
      **/
-    float getDistance(MotionEvent event) {
+    private float getDistance(MotionEvent event) {
         float x = event.getX(0) - event.getX(1);
         float y = event.getY(0) - event.getY(1);
 
@@ -315,7 +327,7 @@ public class MyImageView extends ImageView {
     /**
      * 两个手指 只能放大缩小
      **/
-    void onPointerDown(MotionEvent event) {
+    private void onPointerDown(MotionEvent event) {
         Log.d(TAG, "两个手指: ");
         if (event.getPointerCount() == 2) {
             state = 2;
@@ -334,5 +346,18 @@ public class MyImageView extends ImageView {
                 invalidate();
             }
         }
+    }
+
+    public void alpha0to1() {
+        ValueAnimator animator = ValueAnimator.ofInt(0, 255);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mAlpha = (int) animation.getAnimatedValue();
+                invalidate();
+            }
+        });
+        animator.setDuration(500);
+        animator.start();
     }
 }

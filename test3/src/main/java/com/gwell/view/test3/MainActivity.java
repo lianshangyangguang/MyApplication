@@ -18,16 +18,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         img1 = (ImageView) findViewById(R.id.view);
 
+
         img1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startPhotoActivity(MainActivity.this,img1);
+                startPhotoActivity(MainActivity.this, img1);
             }
         });
 
     }
 
-    public  void startPhotoActivity(Context context, ImageView imageView) {
+    public void startPhotoActivity(Context context, ImageView imageView) {
         Intent intent = new Intent(context, Main2Activity.class);
         int location[] = new int[2];
 
@@ -37,9 +38,9 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("height", imageView.getHeight());
         intent.putExtra("width", imageView.getWidth());
         intent.putExtra("src", R.mipmap.ic_launcher);
-        Log.d("zxy", "left: "+location[0]+"top:"+location[1]+"height:"+imageView.getHeight()+"width:"
-                   +imageView.getWidth());
+        Log.d("zxy", "left: " + location[0] + "top:" + location[1] + "height:" + imageView.getHeight() + "width:"
+                + imageView.getWidth());
         context.startActivity(intent);
-        overridePendingTransition(0,0);
+        overridePendingTransition(0, 0);
     }
 }
