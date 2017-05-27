@@ -84,7 +84,7 @@ public class Main2Activity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        out();
+        img2.goBack();
         overridePendingTransition(0, R.anim.dismiss);
     }
 
@@ -133,31 +133,7 @@ public class Main2Activity extends AppCompatActivity {
         ObjectAnimator scaleX = ObjectAnimator.ofFloat(img2, "scaleX",1,12);
         ObjectAnimator scaleY = ObjectAnimator.ofFloat(img2, "scaleY",1,12);
         ObjectAnimator alpha = ObjectAnimator.ofFloat(img2, "alpha", 0, 255);
-        scaleY.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-//                View v = (View) img2.getParent();
-//                v.setBackgroundColor(Color.BLACK);
-//                img2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-//                        ViewGroup.LayoutParams.MATCH_PARENT));
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-
+//        img2.getAlphaAnimation();
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether( scaleX, scaleY,alpha,translationX,translationY);
         animatorSet.setDuration(500);

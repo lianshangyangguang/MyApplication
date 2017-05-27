@@ -91,7 +91,9 @@ public class MyImageView extends ImageView {
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                if (mTranslateY >= 0 && event.getPointerCount() == 1) {
+               if (mTranslateY <= 0 && event.getPointerCount() == 1){
+                   drag(event);
+               }else if (mTranslateY >= 0 && event.getPointerCount() == 1) {
                     onActionMove(event);
                     //如果有上下位移 则不交给viewpager
                     if (mTranslateY != 0) {
@@ -104,7 +106,6 @@ public class MyImageView extends ImageView {
                     onPointerDown(event);
                 }
 
-                //in viewpager
                 if (mTranslateY == 0 && mTranslateX != 0) {
                     //如果不消费事件，则不作操作
                     if (!isTouchEvent) {
@@ -248,8 +249,6 @@ public class MyImageView extends ImageView {
     }
 
     private void onActionMove(MotionEvent event) {
-        Log.d(TAG, " 单个:state" + state);
-        Log.d("zxy", "onActionMove1: mTranslateY" + mTranslateY);
         if (state != 1) {
             return;
         }
@@ -257,8 +256,6 @@ public class MyImageView extends ImageView {
         float moveX = event.getX();
         mTranslateX = moveX - mDownX;
         mTranslateY = moveY - mDownY;
-        Log.d("zxy", "onActionMove2: mTranslateY" + mTranslateY);
-
         //保证上划到到顶还可以继续滑动
         if (mTranslateY < 0) {
             mTranslateY = 0;
@@ -282,10 +279,9 @@ public class MyImageView extends ImageView {
         invalidate();
     }
 
-    //测试   拖到上方的效果
+    //拖到上方
     private void drag(MotionEvent event) {
         Log.d(TAG, " 单个:state" + state);
-        Log.d("zxy", "onActionMove1: mTranslateY" + mTranslateY);
         if (state != 1) {
             return;
         }
@@ -293,12 +289,6 @@ public class MyImageView extends ImageView {
         float moveX = event.getX();
         mTranslateX = moveX - mDownX;
         mTranslateY = moveY - mDownY;
-        Log.d("zxy", "onActionMove2: mTranslateY" + mTranslateY);
-
-        //保证上划到到顶还可以继续滑动
-        if (mTranslateY < 0) {
-            mTranslateY = 0;
-        }
         invalidate();
     }
 
@@ -344,31 +334,5 @@ public class MyImageView extends ImageView {
                 invalidate();
             }
         }
-    }
-
-    private ValueAnimator getTranslateYAnimation() {
-        final ValueAnimator animator = ValueAnimator.ofFloat(mTranslateY, 0);
-        animator.setDuration(DURATION);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                mTranslateY = (float) valueAnimator.getAnimatedValue();
-            }
-        });
-
-        return animator;
-    }
-
-    private ValueAnimator getAlphaAnimation() {
-        final ValueAnimator animator = ValueAnimator.ofInt(mAlpha, 255);
-        animator.setDuration(DURATION);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                mAlpha = (int) valueAnimator.getAnimatedValue();
-            }
-        });
-
-        return animator;
     }
 }
