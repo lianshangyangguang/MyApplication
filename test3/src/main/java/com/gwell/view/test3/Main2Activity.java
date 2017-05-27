@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -24,6 +25,9 @@ public class Main2Activity extends AppCompatActivity {
     private float mScaleY;
     private float mTranslationX;
     private float mTranslationY;
+    private float scale;
+    String TAG ="zxy";
+    int height;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +39,7 @@ public class Main2Activity extends AppCompatActivity {
         DisplayMetrics metric = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metric);
         int width = metric.widthPixels;     // 屏幕宽度（像素）
-        int height = metric.heightPixels;   // 屏幕高度（像素）
+        height = metric.heightPixels;   // 屏幕高度（像素）
         mOriginLeft = getIntent().getIntExtra("left", 0);
         mOriginTop = getIntent().getIntExtra("top", 0);
         mOriginHeight = getIntent().getIntExtra("height", 0);
@@ -43,29 +47,35 @@ public class Main2Activity extends AppCompatActivity {
         mOriginCenterX = mOriginLeft + mOriginWidth / 2;
         mOriginCenterY = mOriginTop + mOriginHeight / 2;
 
+        Log.d(TAG, "traY: "+(height/2-mOriginCenterY));
+        Log.d("zxy", "jisuan:width:"+(width/2-mOriginCenterX)+"height:"+((height)/2-mOriginCenterY));
+
         int[] location = new int[2];
 
         img2.getLocationOnScreen(location);
 
         mTargetHeight = height;
         mTargetWidth = width;
+
+
         mScaleX = (float)  mTargetWidth/ mOriginWidth;
         mScaleY = (float)  mTargetHeight/  mOriginHeight;
 
-        float targetCenterX = location[0] + mTargetWidth / 2;
-        float targetCenterY = location[1] + mTargetHeight / 2;
+        scale = mScaleX>mScaleY?mScaleX:mScaleY;
 
-        mTranslationX = mOriginCenterX - targetCenterX;
+        float targetCenterX = mTargetWidth / 2;
+        float targetCenterY = mTargetHeight / 2;
+
+        mTranslationX =  targetCenterX-  mOriginCenterX;
         mTranslationY = mOriginCenterY - targetCenterY;
+
+
+        Log.d(TAG, "mTranslationX: "+mTranslationX+"mTranslationY:"+(height-mOriginTop)/2);
 
         comein();
         img2.setOnClickListener(new MyImageView.OnClickListener() {
             @Override
-            public void onClick() {
-               out();
-            }
-            @Override
-            public void onChangeBackground() {
+            public void onExit() {
                 finish();
                 overridePendingTransition(0, R.anim.dismiss);
             }
@@ -79,9 +89,11 @@ public class Main2Activity extends AppCompatActivity {
     }
 
     private void out() {
+//        img2.goBack();
+//        finish();
+//        overridePendingTransition(0, R.anim.dismiss);
         ObjectAnimator translationX = ObjectAnimator.ofFloat(img2, "translationX", img2.getTranslationX(), 0);
         ObjectAnimator translationY = ObjectAnimator.ofFloat(img2, "translationY", img2.getTranslationY(), 100);
-
         ObjectAnimator scaleX = ObjectAnimator.ofFloat(img2, "scaleX", img2.getScaleX(), 1);
         ObjectAnimator scaleY = ObjectAnimator.ofFloat(img2, "scaleY", img2.getScaleY(), 1);
         ObjectAnimator alpha = ObjectAnimator.ofFloat(img2, "alpha", 255,0);
@@ -120,7 +132,7 @@ public class Main2Activity extends AppCompatActivity {
 
         ObjectAnimator scaleX = ObjectAnimator.ofFloat(img2, "scaleX",1,12);
         ObjectAnimator scaleY = ObjectAnimator.ofFloat(img2, "scaleY",1,12);
-        ObjectAnimator alpha = ObjectAnimator.ofFloat(img2, "alpha", 0, 1);
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(img2, "alpha", 0, 255);
         scaleY.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -147,7 +159,7 @@ public class Main2Activity extends AppCompatActivity {
         });
 
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether( scaleX, scaleY,translationX,translationY);
+        animatorSet.playTogether( scaleX, scaleY,alpha,translationX,translationY);
         animatorSet.setDuration(500);
         animatorSet.start();
     }
