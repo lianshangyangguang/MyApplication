@@ -36,7 +36,7 @@ public class Main2Activity extends AppCompatActivity {
 
         //由于此处为NoActionBar   应用区域（）
         DisplayMetrics metric = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metric);
+        getWindowManager().getDefaultDisplay().getRealMetrics(metric);
         width = metric.widthPixels;
         height = metric.heightPixels;
 
