@@ -15,10 +15,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DragPhotoActivity"
-            android:theme="@style/translucent">
-
-        </activity>
+        <activity
+            android:name=".DragPhotoActivity"
+            android:theme="@style/translucent"></activity>
+        <activity android:name=".TestActivity"
+            android:theme="@style/translucent" ></activity>
     </application>
 
 </manifest>

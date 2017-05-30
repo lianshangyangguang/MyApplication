@@ -10,12 +10,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
-/**
- * Author :  suzeyu
- * Time   :  2016-12-26  上午1:41
- * ClassDescription : 对多点触控场景时, {@link ViewPager#onInterceptTouchEvent(MotionEvent)}中
- *                  pointerIndex = -1. 发生IllegalArgumentException: pointerIndex out of range 处理
- */
 public class FixMultiViewPager extends ViewPager {
     private static final String TAG = FixMultiViewPager.class.getSimpleName();
 
@@ -37,5 +31,7 @@ public class FixMultiViewPager extends ViewPager {
         }
         return false;
     }
+
+
 
 }

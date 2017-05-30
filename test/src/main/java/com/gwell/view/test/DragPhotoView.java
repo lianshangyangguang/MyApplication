@@ -84,23 +84,16 @@ public class DragPhotoView extends PhotoView {
                     if (event.getPointerCount() == 2){
                         beforeLenght = getDistance(event);// 获取两点的距离
                     }else{
-
                         onActionDown(event);
-
-                        //change the canFinish flag
-                        canFinish = !canFinish;
                     }
-
-
-
+                    canFinish = !canFinish;
                     break;
-
                 case MotionEvent.ACTION_MOVE:
                     Log.d("zxy", "ACTION_MOVE: ");
-                     if (event.getPointerCount() == 2){
-                         Log.d("zxy", "双击 ");
-                         onPointerDown(event);
-                     }
+                    if (event.getPointerCount() == 2){
+                        Log.d("zxy", "双击 ");
+                        onPointerDown(event);
+                    }
                     //in viewpager
                     if (mTranslateY == 0 && mTranslateX != 0) {
 
@@ -130,43 +123,44 @@ public class DragPhotoView extends PhotoView {
 
                 case MotionEvent.ACTION_UP:
                     //防止下拉的时候双手缩放
-                    if (event.getPointerCount() == 1 ) {
-                        Log.d("zxy", "up1: ");
-                        if (zoomStatus  == 1){
-                            zoomStatus  =0 ;
-                            getScaleAnimation().start();
-                            final ValueAnimator animator = ValueAnimator.ofFloat(getX(), 0);
-                            animator.setDuration(DURATION);
-                            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                                @Override
-                                public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                                    mTranslateX = (float) valueAnimator.getAnimatedValue();
-                                }
-                            });
-                            animator.start();
-//                            getTranslateXAnimation().setDuration(2000).start();
-                            getTranslateYAnimation().start();
-                            getAlphaAnimation().start();
-                            break;
-                        }else{
-                            onActionUp(event);
-                            isTouchEvent = false;
-                            //judge finish or not
-                            postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (mTranslateX == 0 && mTranslateY == 0 && canFinish) {
+                    if (zoomStatus == 0) {
+                        onActionUp(event);
+                        isTouchEvent = false;
+                        //judge finish or not
+                        postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (mTranslateX == 0 && mTranslateY == 0 && canFinish) {
 
-                                        if (mTapListener != null) {
-                                            mTapListener.onTap(DragPhotoView.this);
-                                        }
+                                    if (mTapListener != null) {
+                                        mTapListener.onTap(DragPhotoView.this);
                                     }
-                                    canFinish = false;
                                 }
-                            }, 300);
-                        }
+                                canFinish = false;
+                            }
+                        }, 300);
+
+                    } else if (zoomStatus == 1) {
+                        Log.d("zxy", "up1: ");
+                        zoomStatus = 0;
+                        getScaleAnimation().start();
+                        final ValueAnimator animator = ValueAnimator.ofFloat(getX(), 0);
+                        animator.setDuration(DURATION);
+                        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                            @Override
+                            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                                mTranslateX = (float) valueAnimator.getAnimatedValue();
+                            }
+                        });
+                        animator.start();
+//                            getTranslateXAnimation().setDuration(2000).start();
+                        getTranslateYAnimation().start();
+                        getAlphaAnimation().start();
 
                     }
+                    zoomStatus = 0;
+                    break;
+
             }
         }
 
@@ -228,6 +222,9 @@ public class DragPhotoView extends PhotoView {
     }
 
     private void onActionMove(MotionEvent event) {
+        if (zoomStatus ==1){
+            return;
+        }
         Log.d("zxy", "onActionMove1: mTranslateY"+mTranslateY);
         float moveY = event.getY();
         float moveX = event.getX();

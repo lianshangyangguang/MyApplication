@@ -2,10 +2,15 @@ package com.gwell.view.test3;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.WindowManager;
+import android.view.Display;
+
+import java.lang.reflect.Method;
 
 public class Main2Activity extends AppCompatActivity {
 
@@ -38,7 +43,7 @@ public class Main2Activity extends AppCompatActivity {
         DisplayMetrics metric = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getRealMetrics(metric);
         width = metric.widthPixels;
-        height = metric.heightPixels;
+        height = getScreenDPI(this);
 
         //状态栏高度
 
@@ -94,6 +99,30 @@ public class Main2Activity extends AppCompatActivity {
         });
 
     }
+
+    /**
+     * 获取屏幕高度
+     *
+     * @return
+     */
+    public static int getScreenDPI(Context context) {
+        int dpi = 0;
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        Class c;
+        try {
+            c = Class.forName("android.view.Display");
+            Method method = c.getMethod("getRealMetrics", DisplayMetrics.class);
+            method.invoke(display, displayMetrics);
+            dpi = displayMetrics.heightPixels;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return dpi;
+    }
+
 
     @Override
     public void onBackPressed() {
