@@ -6,11 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ViewTreeObserver;
-import android.widget.ImageView;
 
 public class TestActivity extends AppCompatActivity {
 
-    private DragPhotoView view;
+    private DragImageView view;
     int mOriginLeft;
     int mOriginTop;
     int mOriginHeight;
@@ -27,18 +26,18 @@ public class TestActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
-        view= (DragPhotoView) findViewById(R.id.view);
-        view.setImageResource(R.mipmap.ic_launcher);
-        view.setOnTapListener(new DragPhotoView.OnTapListener() {
+        view= (DragImageView) findViewById(R.id.view);
+        view.setImageResource(R.drawable.wugeng);
+        view.setOnTapListener(new DragImageView.OnTapListener() {
             @Override
-            public void onTap(DragPhotoView view) {
+            public void onTap(DragImageView view) {
                 finishWithAnimation();
             }
         });
 
-        view.setOnExitListener(new DragPhotoView.OnExitListener() {
+        view.setOnExitListener(new DragImageView.OnExitListener() {
             @Override
-            public void onExit(DragPhotoView view, float x, float y, float w, float h) {
+            public void onExit(DragImageView view, float x, float y, float w, float h) {
                 performExitAnimation(view, x, y, w, h);
             }
         });
@@ -84,7 +83,7 @@ public class TestActivity extends AppCompatActivity {
     }
 
     private void performEnterAnimation() {
-        final DragPhotoView photoView = view;
+        final DragImageView photoView = view;
         ValueAnimator translateXAnimator = ValueAnimator.ofFloat(photoView.getX(), 0);
         translateXAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -127,7 +126,7 @@ public class TestActivity extends AppCompatActivity {
     }
 
 
-    private void performExitAnimation(final DragPhotoView view, float x, float y, float w, float h) {
+    private void performExitAnimation(final DragImageView view, float x, float y, float w, float h) {
         Log.d("zxy", "performExitAnimation: ");
         view.finishAnimationCallBack();
         float viewX = mTargetWidth / 2 + x - mTargetWidth * mScaleX / 2;
@@ -151,7 +150,7 @@ public class TestActivity extends AppCompatActivity {
         });
         translateXAnimator.setDuration(300);
         translateXAnimator.start();
-        ValueAnimator translateYAnimator = ValueAnimator.ofFloat(view.getY(), view.getY() + translateY);
+        ValueAnimator translateYAnimator = ValueAnimator.ofFloat(view.getY(), view.getY() + translateY-mOriginHeight/2);
         translateYAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -187,7 +186,7 @@ public class TestActivity extends AppCompatActivity {
 
     private void finishWithAnimation() {
         Log.d("zxy", "finishWithAnimation: ");
-        final DragPhotoView photoView = view;
+        final DragImageView photoView = view;
         ValueAnimator translateXAnimator = ValueAnimator.ofFloat(0, mTranslationX);
         translateXAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override

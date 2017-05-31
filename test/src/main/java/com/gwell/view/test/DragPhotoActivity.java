@@ -19,7 +19,7 @@ import java.util.List;
 public class DragPhotoActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private List<String> mList;
-    private DragPhotoView[] mPhotoViews;
+    private DragImageView[] mPhotoViews;
 
     int mOriginLeft;
     int mOriginTop;
@@ -47,26 +47,26 @@ public class DragPhotoActivity extends AppCompatActivity {
 
         mList = new ArrayList<>();
         mList.add("path");
-        mPhotoViews = new DragPhotoView[mList.size()];
+        mPhotoViews = new DragImageView[mList.size()];
 
         for (int i = 0; i < mPhotoViews.length; i++) {
-            mPhotoViews[i] = (DragPhotoView) View.inflate(this, R.layout.item_viewpager, null);
-            int src = getIntent().getIntExtra("src",-1);
-            if (src == -1){
+            mPhotoViews[i] = (DragImageView) View.inflate(this, R.layout.item_viewpager, null);
+            int src = getIntent().getIntExtra("src", -1);
+            if (src == -1) {
                 mPhotoViews[i].setImageResource(R.mipmap.ic_launcher);  //占位图
-            }else {
+            } else {
                 mPhotoViews[i].setImageResource(R.mipmap.ic_launcher);
             }
-            mPhotoViews[i].setOnTapListener(new DragPhotoView.OnTapListener() {
+            mPhotoViews[i].setOnTapListener(new DragImageView.OnTapListener() {
                 @Override
-                public void onTap(DragPhotoView view) {
+                public void onTap(DragImageView view) {
                     finishWithAnimation();
                 }
             });
 
-            mPhotoViews[i].setOnExitListener(new DragPhotoView.OnExitListener() {
+            mPhotoViews[i].setOnExitListener(new DragImageView.OnExitListener() {
                 @Override
-                public void onExit(DragPhotoView view, float x, float y, float w, float h) {
+                public void onExit(DragImageView view, float x, float y, float w, float h) {
                     performExitAnimation(view, x, y, w, h);
                 }
             });
@@ -110,7 +110,7 @@ public class DragPhotoActivity extends AppCompatActivity {
 
                         int[] location = new int[2];
 
-                        final DragPhotoView photoView = mPhotoViews[0];
+                        final DragImageView photoView = mPhotoViews[0];
                         photoView.getLocationOnScreen(location);
 
                         mTargetHeight = (float) photoView.getHeight();
@@ -140,12 +140,12 @@ public class DragPhotoActivity extends AppCompatActivity {
 
     /**
      * ===================================================================================
-     * <p>
+     * <p/>
      * 底下是低版本"共享元素"实现   不需要过分关心  如有需要 可作为参考.
-     * <p>
+     * <p/>
      * Code  under is shared transitions in all android versions implementation
      */
-    private void performExitAnimation(final DragPhotoView view, float x, float y, float w, float h) {
+    private void performExitAnimation(final DragImageView view, float x, float y, float w, float h) {
         Log.d("zxy", "performExitAnimation: ");
         view.finishAnimationCallBack();
         float viewX = mTargetWidth / 2 + x - mTargetWidth * mScaleX / 2;
@@ -205,7 +205,7 @@ public class DragPhotoActivity extends AppCompatActivity {
 
     private void finishWithAnimation() {
         Log.d("zxy", "finishWithAnimation: ");
-        final DragPhotoView photoView = mPhotoViews[0];
+        final DragImageView photoView = mPhotoViews[0];
         ValueAnimator translateXAnimator = ValueAnimator.ofFloat(0, mTranslationX);
         translateXAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -272,7 +272,7 @@ public class DragPhotoActivity extends AppCompatActivity {
     }
 
     private void performEnterAnimation() {
-        final DragPhotoView photoView = mPhotoViews[0];
+        final DragImageView photoView = mPhotoViews[0];
         ValueAnimator translateXAnimator = ValueAnimator.ofFloat(photoView.getX(), 0);
         translateXAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override

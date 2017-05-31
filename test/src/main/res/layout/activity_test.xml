@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
       tools:context="com.gwell.view.test.TestActivity">
-<com.gwell.view.test.DragPhotoView
+<com.gwell.view.test.DragImageView
     android:id="@+id/view"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />

@@ -10,14 +10,14 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
-public class FixMultiViewPager extends ViewPager {
-    private static final String TAG = FixMultiViewPager.class.getSimpleName();
+public class PhotoViewPager extends ViewPager {
+    private static final String TAG = PhotoViewPager.class.getSimpleName();
 
-    public FixMultiViewPager(Context context) {
+    public PhotoViewPager(Context context) {
         super(context);
     }
 
-    public FixMultiViewPager(Context context, AttributeSet attrs) {
+    public PhotoViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -27,10 +27,11 @@ public class FixMultiViewPager extends ViewPager {
             return super.onInterceptTouchEvent(ev);
         } catch (IllegalArgumentException ex) {
             Log.w(TAG, "onInterceptTouchEvent() ", ex);
-            ex.printStackTrace();
+//            ex.printStackTrace();
         }
         return false;
     }
+
 
 
 

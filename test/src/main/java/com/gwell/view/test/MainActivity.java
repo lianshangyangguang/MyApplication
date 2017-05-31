@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
 
   public  void startPhotoActivity(Context context, ImageView imageView) {
-    Intent intent = new Intent(context, DragPhotoActivity.class);
+    Intent intent = new Intent(context, TestActivity.class);
     int location[] = new int[2];
 
     imageView.getLocationOnScreen(location);
